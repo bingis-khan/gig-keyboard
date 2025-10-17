@@ -93,6 +93,9 @@ void setup() {
           : default_key == 'j' ? KEY_PAGE_DOWN
           : default_key == 'k' ? KEY_PAGE_UP
 
+          // HACK to enable CTRL + LEFT/RIGHT ARROW in terminal and controls
+          : default_key == KEY_LEFT_CTRL ? KEY_LEFT_CTRL
+
           : ci >= NUM_BEGIN_CI && ci < (NUM_BEGIN_CI + 10) && ri == NUM_BEGIN_RI
             ? ((char)(KEY_F1 + (ci - NUM_BEGIN_CI)))  // NOTE: formula works until F12 (https://docs.arduino.cc/language-reference/en/functions/usb/Keyboard/keyboardModifiers/#escape-and-function-keys)
           : num_key;
