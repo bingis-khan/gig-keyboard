@@ -71,10 +71,12 @@ void setup() {
           : default_key == 'l' ? KEY_RIGHT_ARROW
 
           // ctrl -> tab
+          // EDIT: this is hard... I use tab, but at the same time I want to use ctrl+arrow keys to move around a command.
           : default_key == KEY_LEFT_CTRL ? KEY_TAB
           
           // backspace -> delete
-          : default_key == KEY_BACKSPACE ? KEY_DELETE
+          // EDIT: stupid idea - super annoying in practice. I'll leave DELETE unmapped for now.
+          // : default_key == KEY_BACKSPACE ? KEY_DELETE
 
           // misc keys which didn't make the cut
           : default_key == '-' ? '['   // NOTE: not the < > keys, because they have '.' and ',' which are useful when writing decimal points.

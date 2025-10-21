@@ -2,6 +2,12 @@
 
 cool split keyboard.
 
+## Compiling
+
+```
+  arduino-cli compile -ub rp2040:rp2040:waveshare_rp2040_pizero -p /dev/ttyACM0
+```
+
 
 ## Notes
 
