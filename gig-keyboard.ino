@@ -1,4 +1,5 @@
 #include <Keyboard.h>
+#include <Mouse.h>
 
 // because we do pullup, the shit is actually reversed.
 // So, unlike https://www.dribin.org/dave/keyboard/one_html/,
@@ -20,7 +21,10 @@
 
 // num switch
 #define NUM_SWITCH_PIN_IDS 3,3
+// fn switch
 #define FN_SWITCH_PIN_IDS 3,0
+// mouse switch
+#define JUICE_PIN_IDS 3,11
 // where the numeric part begins.
 #define NUM_BEGIN_CI 1
 #define NUM_BEGIN_RI 0
@@ -41,6 +45,14 @@ typedef struct {
 
 Key chars[ROWS_NUM][COLUMNS_NUM];
 
+
+typedef struct {
+  int last_moved;  // both up/down wheel. (a struct, because we might split it into last_moved_up/down)
+} MouseWheel;
+
+MouseWheel wheel;
+
+
 void setup() {
   // set ROWS as OUTPUT
   for (int i = 0; i < ROWS_NUM; i++) {
@@ -51,6 +63,7 @@ void setup() {
     pinMode(columns[i], INPUT_PULLUP);
   }
 
+  // setup keys
   const char char_keys[ROWS_NUM][COLUMNS_NUM] = CHARS;
   for (int ri = 0; ri < ROWS_NUM; ri++) {
     for (int ci = 0; ci < COLUMNS_NUM; ci++) {
@@ -111,13 +124,25 @@ void setup() {
     }
   }
 
+
+  // mouse init
+  wheel.last_moved = millis();
+
   Keyboard.begin();
+  Mouse.begin();
+  Serial.begin(115200);
 }
 
 void loop() {
   // read special modifier keys
   bool num_switch = quick_check(NUM_SWITCH_PIN_IDS);
   bool special_switch = quick_check(FN_SWITCH_PIN_IDS);
+  bool mouse_switch = quick_check(JUICE_PIN_IDS);
+
+  if (!mouse_switch) {
+    unpress_mouse();
+  }
+
 
   // read keyboard in general
   {
@@ -128,13 +153,23 @@ void loop() {
         const int c = columns[ci];
 
         Key *const k = &chars[ri][ci];
+
+
         const char key
           = special_switch && num_switch ? k->fn_key
           : num_switch ? k->num_key
           : k->key;
 
-        if (k->last_pressed_key != key && k->last_pressed_key != NO_KEY) {
+        // TODO: some logic restructure (key release in two places - kinda cringe)
+        // ANOTHER TODO: make use of internal keyboard structure and eliminate last_pressed_key (and change it to isPressed? maybe less bugs, but more calls, as we're asking for each key)
+        if ((k->last_pressed_key != key || mouse_switch) && k->last_pressed_key != NO_KEY) {
           Keyboard.release(k->last_pressed_key);
+        }
+
+        // special mouse escape hatch.
+        if (mouse_switch) {
+          handle_mouse(num_switch, special_switch, c, k);
+          continue;
         }
 
         if (key == NO_KEY) {
@@ -151,6 +186,78 @@ void loop() {
   }
 
   delay(10);  // this seems to be enough for debouncing.
+}
+
+
+static void handle_mouse(bool slower, bool faster, int c, Key *const k) {
+  const bool pressed = digitalRead(c) == LOW;
+
+  int cursor_speed = CASE
+    : slower && !faster ? 1
+    : faster && !slower ? 12
+    : 5;
+    // with my experiments, I don't think we need a fourth speed.
+
+  int wheel_delay = CASE
+    : slower && !faster ? 200
+    : !slower && faster ? 10
+    : 40;
+  
+  switch (k->key) {
+    // mouse wheel
+    // speed 1 is already plenty fast
+    case 'j': {
+      int t = millis();
+      if (pressed && t - wheel.last_moved >= wheel_delay) {
+        Mouse.move(0, 0, -1);
+        wheel.last_moved = t;
+      }
+    } break;
+    case 'k': {
+      int t = millis();
+      if (pressed && t - wheel.last_moved >= wheel_delay) {
+        Mouse.move(0, 0, 1);
+        wheel.last_moved = t;
+      }
+    } break;
+
+    // cursor movement
+    case '.': {
+        if (pressed) Mouse.move(0, -cursor_speed);
+    }; break;
+    case '=': {
+        if (pressed) Mouse.move(0, cursor_speed);
+    }; break;
+    case '-': {
+        if (pressed) Mouse.move(-cursor_speed, 0);
+    }; break;
+    case '\'': {
+        if (pressed) Mouse.move(cursor_speed, 0);
+    }; break;
+
+    // cursor buttons
+    // TD: maybe just call a function...
+    case ',': {
+        handle_press(pressed, MOUSE_LEFT);
+    } break;
+    case 'l': {
+        handle_press(pressed, MOUSE_MIDDLE);
+    } break;
+    case '/': {
+        handle_press(pressed, MOUSE_RIGHT);
+    } break;
+  }
+}
+
+static void handle_press(bool pressed, int mb) {
+  if (pressed && !Mouse.isPressed(mb)) Mouse.press(mb);
+  else if (!pressed && Mouse.isPressed(mb)) Mouse.release(mb);
+}
+
+static void unpress_mouse() {
+  if (Mouse.isPressed(MOUSE_LEFT))   Mouse.release(MOUSE_LEFT);
+  if (Mouse.isPressed(MOUSE_MIDDLE)) Mouse.release(MOUSE_MIDDLE);
+  if (Mouse.isPressed(MOUSE_RIGHT))  Mouse.release(MOUSE_RIGHT);
 }
 
 
