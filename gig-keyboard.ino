@@ -162,17 +162,22 @@ void loop() {
 
         // TODO: some logic restructure (key release in two places - kinda cringe)
         // ANOTHER TODO: make use of internal keyboard structure and eliminate last_pressed_key (and change it to isPressed? maybe less bugs, but more calls, as we're asking for each key)
-        if ((k->last_pressed_key != key || mouse_switch) && k->last_pressed_key != NO_KEY) {
+        if ((k->last_pressed_key != key || (mouse_switch && ci >= 6)) && k->last_pressed_key != NO_KEY) {
           Keyboard.release(k->last_pressed_key);
         }
 
         // special mouse escape hatch.
-        if (mouse_switch) {
+        if (mouse_switch && ci >= 6) {  // NOTE: mouse look hack. because we're using only the right side (except modifiers), we can use the left side as a normal keyboard. this makes it possible to sorta play videogames with mouse look.
           handle_mouse(num_switch, special_switch, c, k);
           continue;
         }
 
         if (key == NO_KEY) {
+          continue;
+        }
+
+        // HACK mouse look: don't press lalt when juiced
+        if (key == KEY_LEFT_ALT && mouse_switch) {
           continue;
         }
 
