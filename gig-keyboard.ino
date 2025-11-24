@@ -7,9 +7,10 @@
 
 // QMK style defs for style
 // ROWS (top - bottom):
-#define ROWS { 10, 9, 8, 7 }
+#define ROWS { 0, 1, 2, 3 }
 // LEFT COLUMNS (left-right):
-#define COLUMNS { 15, 14, 13, 12, 11, 6, 5, 4, 3, 2, 1, 0 }
+// #define COLUMNS { 10, 4, 7, 6, 5, 8, 29, 28, 11, 26, 15, 14 }
+#define COLUMNS { 14, 15, 26, 11, 28, 29, 8, 5, 6, 7, 4, 10 }
 #define CHARS \
   { { KEY_ESC, 'q', 'w', 'e', 'r', 't',         'y', 'u', 'i', 'o', 'p', KEY_BACKSPACE  } \
   , { KEY_LEFT_CTRL, 'a', 's', 'd', 'f', 'g',   'h', 'j', 'k', 'l', ';', KEY_RETURN } \
@@ -85,7 +86,8 @@ void setup() {
 
           // ctrl -> tab
           // EDIT: this is hard... I use tab, but at the same time I want to use ctrl+arrow keys to move around a command.
-          : default_key == KEY_LEFT_CTRL ? KEY_TAB
+          // EDIT: CHANGED LCTRL TO A.
+          : default_key == 'a' ? KEY_TAB
           
           // backspace -> delete
           // EDIT: stupid idea - super annoying in practice. I'll leave DELETE unmapped for now.

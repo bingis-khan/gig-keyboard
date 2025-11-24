@@ -123,7 +123,7 @@ function farcut(x) =
 
 
 rp_width = 24;
-rp_height = 18;
+rp_height = 18.8;
 rp_more = 3;  // elongate the thing, so you can put in the rpi easier.
 usbc_width = 7;
 usbc_height = 9 + 1;  // measured + error
