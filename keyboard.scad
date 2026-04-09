@@ -81,7 +81,7 @@ module test_key_grid() {
             translate([x + off, y + off, -cut_depth/2]) cube([key_size, key_size, avg_depth + cut_depth]);
         }
     }
-    
+   
 }
 
 module key_plane(edge_off, last_line) {
@@ -285,8 +285,18 @@ module right_part() {
 	}
 }
 
+// crap
+module third_leg() {
+	shit_d = avg_depth - 1;
+	shit_d2 = avg_depth + 3;
+	offff = -.7;
+	w = 9;
+	wtf = 2.5;
+	translate([3, use_height - 4 + offff, 0]) cube([w, w, shit_d]);
+	translate([3, use_height + 2 + offff - wtf, 0]) cube([w, w - 6 + wtf, shit_d2]);
+}
 
-// BOB_SCAD_PRINT left_part right_part
+// BOB_SCAD_PRINT left_part right_part third_leg
 if (!print) {
     left_part();
     translate([300, 0, 0]) right_part();

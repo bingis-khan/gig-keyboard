@@ -1,20 +1,34 @@
-# The kween board
+# My split keyboard
 
-cool split keyboard.
+my cool split keyboard. contains OpenSCAD source files and the arduino project file.
+
+![keyboard top](./keyboard-top.jpg)
+![keyboard bottom](./keyboard-bot.jpg)
 
 ## Compiling
+
+To generate the STL files, run `./print-script.sh`, which exports the STL part files.
+
+For programming the board, use:
 
 ```
   arduino-cli compile -ub rp2040:rp2040:waveshare_rp2040_pizero -p /dev/ttyACM0
 ```
 
 
-## Notes
+## Special mapping
 
-- juice key vs bigger space and alt (right side)
-  - I had space for one key, but maybe I should just have 1.5u space and alt. Currently, that 1u space looks stupid and I'm also not using it that much... (I guess I just don't use the rspace...) Would I start using it after I enlarge it?
-- juice key toggle MOUSE MODE
-  - just an idea
-  - either hjkl steering mouse OR jk for scroll and some other place for dat mouse.
-  - move mouse with keys.
-  - clicking and scrolling obv.
+- Soya button + hjkl - arrows
+- Soya + top row - numbers
+- Soya + 250mL + top row - Fn keys.
+- 250mL (without Soya) - left alt
+- juice key + -.'= keys - mouse movement.
+- juice key + jk - scroll
+- juice key + ,l/ - left/middle/right mouse button click
+
+
+## Notes for V2
+
+- use a pcb next time - wire crosstalk problems (actually, probably single copper strands touching each other)
+- with psb, try adding how-swappable sockets.
+- use linear switches
