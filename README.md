@@ -30,5 +30,5 @@ For programming the board, use:
 ## Notes for V2
 
 - use a pcb next time - wire crosstalk problems (actually, probably single copper strands touching each other)
-- with psb, try adding how-swappable sockets.
+- with a pcb, try adding how-swappable sockets.
 - use linear switches
